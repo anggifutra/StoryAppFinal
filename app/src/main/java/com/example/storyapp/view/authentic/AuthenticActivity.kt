@@ -49,6 +49,7 @@ class AuthenticActivity : AppCompatActivity() {
 
         binding.login.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
         binding.register.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))

@@ -1,20 +1,9 @@
 package com.example.storyapp.data
 
-import androidx.lifecycle.LiveData
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.liveData
+import retrofit2.Call
 
-class StoryRepository(private val apiService: ApiService) {
-    fun getStory(): LiveData<PagingData<ListStory>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 10
-            ),
-            pagingSourceFactory = {
-                StoryPagingSource(apiService)
-            }
-        ).liveData
+class StoryRepository(private val storyDatabase: StoryDatabase,private val apiService: ApiService) {
+    suspend fun getStory(token: String): Call<ResponseStory> {
+        return apiService.getStory("Bearer $token")
     }
 }

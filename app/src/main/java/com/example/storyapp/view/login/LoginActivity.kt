@@ -58,6 +58,7 @@ class LoginActivity : AppCompatActivity() {
                         it.loginResult?.token.toString(), isLogin = true)
                     )
                     val intent = Intent(this@LoginActivity, ListStoryActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     intent.putExtra(ListStoryActivity.TOKEN, it.loginResult?.token.toString())
                     startActivity(intent)
                     finish()

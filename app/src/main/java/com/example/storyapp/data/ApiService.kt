@@ -30,9 +30,7 @@ interface ApiService {
     ): Call<FileUploadResponse>
 
     @GET("stories")
-    fun getStory(
-        @Query("page") page: Int,
-        @Query("size") size: Int,
+    suspend fun getStory(
         @Header("Authorization") token: String
     ): Call<ResponseStory>
 

@@ -7,16 +7,22 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.storyapp.data.*
 import com.example.storyapp.view.list_story.ListStoryActivity.Companion.TAG
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ListStoryViewModel(storyRepository: StoryRepository) : ViewModel() {
+class ListStoryViewModel(private val storyRepository: StoryRepository) : ViewModel() {
 //    class ListStoryViewModel(private val pref: UserPreference) : ViewModel() {
 
-//    private val _listStory = MutableLiveData<List<ListStory>>()
-    val listStory: LiveData<PagingData<ListStory>> =
-        storyRepository.getStory().cachedIn(viewModelScope)
+    private val _listStory = MutableLiveData<List<ListStory>>()
+    val listStory: LiveData<List<ListStory>> = _listStory
+
+    fun getStory(token: String) {
+        viewModelScope.launch {
+            _listStory.postValue(storyRepository.getStory(token))
+        }
+    }
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -59,12 +65,5 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             return ListStoryViewModel(Injection.provideRepository(context)) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
-object Injection {
-    fun provideRepository(context: Context): StoryRepository {
-        val apiService = ApiConfig.getApiService()
-        return StoryRepository(apiService)
     }
 }
