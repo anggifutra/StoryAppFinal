@@ -24,6 +24,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var welcomeViewModel: WelcomeViewModel
+    private var token : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,9 @@ class WelcomeActivity : AppCompatActivity() {
 
         welcomeViewModel = ViewModelProvider(this, ViewModelFactory(UserPreference.getInstance(dataStore))
         )[WelcomeViewModel::class.java]
+        welcomeViewModel.getUser().observe(this){
+            token = it.token
+        }
         logout.setOnClickListener {
             welcomeViewModel.logout()
             startActivity(Intent(this, MainActivity::class.java))
@@ -53,8 +57,8 @@ class WelcomeActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu1 -> {
                 val i = Intent(this, ListStoryActivity::class.java)
+                i.putExtra(ListStoryActivity.TOKEN, token)
                 startActivity(i)
-                finish()
                 true
             }R.id.menu2 -> {
                 val i = Intent(this, UploadActivity::class.java)
@@ -62,6 +66,7 @@ class WelcomeActivity : AppCompatActivity() {
                 true
             }R.id.menu3 -> {
                 val i = Intent(this, MapsActivity::class.java)
+                i.putExtra(ListStoryActivity.TOKEN, token)
                 startActivity(i)
                 true
             }R.id.menu4 -> {

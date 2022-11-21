@@ -21,6 +21,7 @@ import com.example.storyapp.data.UserPreference
 import com.example.storyapp.databinding.ActivityLoginBinding
 import com.example.storyapp.view.ViewModelFactory
 import com.example.storyapp.view.list_story.ListStoryActivity
+import com.example.storyapp.view.welcome.WelcomeActivity
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 class LoginActivity : AppCompatActivity() {
@@ -57,8 +58,8 @@ class LoginActivity : AppCompatActivity() {
                         UserLogin(it.loginResult?.name.toString(),
                         it.loginResult?.token.toString(), isLogin = true)
                     )
-                    val intent = Intent(this@LoginActivity, ListStoryActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    token = it.loginResult?.token.toString()
+                    val intent = Intent(this@LoginActivity, WelcomeActivity::class.java)
                     intent.putExtra(ListStoryActivity.TOKEN, it.loginResult?.token.toString())
                     startActivity(intent)
                     finish()
@@ -71,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun setupView() {
         @Suppress("DEPRECATION")
@@ -94,5 +96,6 @@ class LoginActivity : AppCompatActivity() {
 
     companion object{
         const val TAG = "LoginViewModel"
+        var token = ""
     }
 }

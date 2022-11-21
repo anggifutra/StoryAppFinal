@@ -1,22 +1,16 @@
 package com.example.storyapp.view.list_story
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.paging.PagingData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.storyapp.R
 import com.example.storyapp.data.ListStory
 import com.example.storyapp.databinding.ListStoryBinding
 import com.squareup.picasso.Picasso
 
 class StoryAdapter:
-    ListAdapter<ListStory, StoryAdapter.ViewHolder>(DIFF_CALLBACK) {
+    PagingDataAdapter<ListStory, StoryAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -37,8 +31,8 @@ class StoryAdapter:
         val data = getItem(position)
         if (data != null) {
             viewHolder.bind(data)
+            viewHolder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(data)}
         }
-        viewHolder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(data)}
     }
     //override fun getItemCount() = listStory.size
 
@@ -52,7 +46,7 @@ class StoryAdapter:
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStory>() {
+            val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStory>() {
             override fun areItemsTheSame(oldItem: ListStory, newItem: ListStory): Boolean {
                 return oldItem == newItem
             }

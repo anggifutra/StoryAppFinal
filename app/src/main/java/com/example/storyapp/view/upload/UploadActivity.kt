@@ -122,7 +122,7 @@ class UploadActivity : AppCompatActivity() {
             )[UploadViewModel::class.java]
             viewModel.isLoading.observe(this){showLoading(it)}
             viewModel.getUser().observe(this){
-                viewModel.upload(it.token, imageMultipart, getDesc!!)
+                viewModel.upload(it.token, imageMultipart, getDesc)
             }
             viewModel.errorMessage.observe(this){
                 if (it.equals("Story created successfully")){

@@ -1,0 +1,5 @@
+a. Ketika berhasil memuat data
+
+	- Memastikan data tidak null.
+	
+	- data berhasil dimuat.

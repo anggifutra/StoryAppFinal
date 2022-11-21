@@ -1,46 +1,43 @@
 package com.example.storyapp.view.maps
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModelProvider
 import com.example.storyapp.R
 import com.example.storyapp.data.ListStory
-import com.example.storyapp.data.UserPreference
+import com.example.storyapp.data.Result
 import com.example.storyapp.databinding.ActivityMapsBinding
-import com.example.storyapp.view.ViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private val boundsBuilder = LatLngBounds.Builder()
-    private lateinit var viewModel: MapsViewModel
+    private val mapsViewModel: MapsViewModel by viewModels {
+        ViewModelFactory(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -64,6 +61,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isMapToolbarEnabled = true
 
         getMyLocation()
+        setMapStyle()
         addView()
 
         val tangerang= LatLng(-6.1702, 106.6403)
@@ -71,27 +69,45 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(tangerang, 15f))
     }
 
+    private fun setMapStyle() {
+        try {
+            val success =
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (exception: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", exception)
+        }
+    }
+
 
     private fun addView(){
-        viewModel = ViewModelProvider(this,
-            ViewModelFactory(UserPreference.getInstance(dataStore)))[MapsViewModel::class.java]
-        viewModel.getUser().observe(this){
-            viewModel.getMap(it.token)
-            viewModel.mapsData.observe(this){items->
-                addManyMarker(items as ArrayList<ListStory>)
+        val tok = intent.getStringExtra(TOKEN)
+        Log.e(TAG, tok.toString())
+        mapsViewModel.getMap(tok.toString()).observe(this){ result->
+            if (result != null){
+                when (result) {
+                    is Result.Success -> {
+                        val storyData = result.data
+                        addManyMarker(storyData as ArrayList<ListStory>)
+                    }
+                    else -> {}
+                }
+
             }
         }
     }
 
     private fun addManyMarker(items : ArrayList<ListStory>) {
         items.forEach { item ->
+            Log.e(TAG, item.name.toString())
             val latLng = item.lat?.let { item.lon?.let { it1 -> LatLng(it, it1) } }
             latLng?.let { MarkerOptions().position(it).title(item.name.toString()) }
                 ?.let { mMap.addMarker(it) }
             if (latLng != null) {
                 boundsBuilder.include(latLng)
             }
-            Log.e(TAG, item.name.toString())
         }
 
         val bounds: LatLngBounds = boundsBuilder.build()
@@ -113,6 +129,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 getMyLocation()
             }
         }
+
     private fun getMyLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
@@ -126,6 +143,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     companion object{
+        const val TOKEN = "Token"
         const val TAG = "Maps Activity"
     }
 }

@@ -29,4 +29,5 @@
     <string name="Description">Description</string>
     <string name="Maps">Maps</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="retry">Try Again</string>
 </resources>

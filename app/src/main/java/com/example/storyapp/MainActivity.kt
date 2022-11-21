@@ -21,6 +21,7 @@ import com.example.storyapp.view.welcome.WelcomeActivity
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 class MainActivity : AppCompatActivity() {
 
+    var token: String = ""
     private lateinit var mainViewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
 
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.getUser().observe(this) { user ->
             Log.e(TAG, "data : "+user.isLogin)
             Log.e(TAG, "data : "+user.token)
+            token = user.token
             if (user.isLogin) {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
@@ -69,6 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         const val TAG = "MainActivity"
+        var token = ""
     }
 
 }

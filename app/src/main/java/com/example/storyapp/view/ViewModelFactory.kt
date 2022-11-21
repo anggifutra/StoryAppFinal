@@ -6,9 +6,7 @@ import com.example.storyapp.MainViewModel
 import com.example.storyapp.data.UserPreference
 import com.example.storyapp.view.authentic.AuthenticViewModel
 import com.example.storyapp.view.list_story.DetailViewModel
-import com.example.storyapp.view.list_story.ListStoryViewModel
 import com.example.storyapp.view.login.LoginViewModel
-import com.example.storyapp.view.maps.MapsViewModel
 import com.example.storyapp.view.upload.UploadViewModel
 import com.example.storyapp.view.welcome.WelcomeViewModel
 
@@ -17,9 +15,6 @@ class ViewModelFactory(private val pref: UserPreference) : ViewModelProvider.New
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(MapsViewModel::class.java) -> {
-                MapsViewModel(pref) as T
-            }
             modelClass.isAssignableFrom(AuthenticViewModel::class.java) -> {
                 AuthenticViewModel(pref) as T
             }
@@ -35,9 +30,6 @@ class ViewModelFactory(private val pref: UserPreference) : ViewModelProvider.New
             modelClass.isAssignableFrom(WelcomeViewModel::class.java) -> {
                 WelcomeViewModel(pref) as T
             }
-//            modelClass.isAssignableFrom(ListStoryViewModel::class.java) -> {
-//                ListStoryViewModel(pref) as T
-//            }
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
                 LoginViewModel(pref) as T
             }
